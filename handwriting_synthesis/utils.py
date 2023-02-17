@@ -35,7 +35,7 @@ class PaddedSequencesBatch:
 
         self._seqs = sequences
 
-        self._max_len = max([len(s) for s in sequences])
+        self._max_len = max(len(s) for s in sequences)
 
         self._inner_dim = len(sequences[0][0])
 
@@ -162,8 +162,7 @@ def split_into_components(seq):
 
 
 def visualize_strokes(seq, save_path='img.png', lines=False):
-    im = create_strokes_image(seq, lines)
-    if im:
+    if im := create_strokes_image(seq, lines):
         im.save(save_path)
     return
 
@@ -184,11 +183,10 @@ def create_strokes_image(seq, lines=False, shrink_factor=1, suppress_errors=True
     if width * height > max_size:
         if suppress_errors:
             return
-        else:
-            msg = f'Resulting image is too large. Width {width}, height {height}. ' \
-                  f'This often happens at the beginning of training when model is far from convergence. ' \
-                  f'Predictions are too noisy and go far beyond reasonable range of coordinate offsets.'
-            raise TooLargeImageError(msg)
+        msg = f'Resulting image is too large. Width {width}, height {height}. ' \
+              f'This often happens at the beginning of training when model is far from convergence. ' \
+              f'Predictions are too noisy and go far beyond reasonable range of coordinate offsets.'
+        raise TooLargeImageError(msg)
 
     im = Image.new(mode='L', size=(width, height), color=255)
 
@@ -227,7 +225,7 @@ def plot_attention_weights(phi, seq, save_path='img.png', text=''):
     axes[0].set_facecolor((0, 0, 0))
     y_ticks = list(range(phi.shape[1]))
     if text:
-        y_labels = [ch for ch in text]
+        y_labels = list(text)
         axes[0].set_yticks(y_ticks)
         axes[0].set_yticklabels(y_labels, rotation=90)
 
@@ -313,16 +311,10 @@ class DensityPlotter:
         seq = model.sample_means(context=c, stochastic=True)
 
         x0 = model.get_initial_input()
-        x = torch.cat([x0.unsqueeze(0), seq.unsqueeze(0)], dim=1)
-
-        return x
+        return torch.cat([x0.unsqueeze(0), seq.unsqueeze(0)], dim=1)
 
     def _get_predictions(self, x):
-        if self.c is not None:
-            mixture, eos = self.model(x, self.c)
-        else:
-            mixture, eos = self.model(x)
-
+        mixture, eos = self.model(x, self.c) if self.c is not None else self.model(x)
         x = x.squeeze(dim=0)
 
         points = self._unnormalize(x, self.norm_mu, self.norm_sd)
@@ -453,7 +445,7 @@ def load_saved_weights(model, check_points_dir='check_points'):
         model.load_state_dict(torch.load(recent_checkpoint))
         print(f'Loaded model weights from {recent_checkpoint} file')
     else:
-        print(f'Could not find a model')
+        print('Could not find a model')
     return model, largest_epoch
 
 
@@ -530,7 +522,7 @@ def split_into_lines(text):
 
 
 def merge_images(*images):
-    max_width = max([im.width for im in images])
+    max_width = max(im.width for im in images)
     combined_height = sum(im.height for im in images)
     image = Image.new(mode='L', size=(max_width, combined_height), color=255)
 

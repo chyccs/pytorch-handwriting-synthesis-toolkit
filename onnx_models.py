@@ -114,8 +114,7 @@ class SoftWindow(nn.Module):
         u = torch.arange(char_seq_size, device=alpha.device)
 
         densities = alpha * torch.exp(-beta * (k - u) ** 2)
-        phi = densities.sum(dim=1).unsqueeze(1)
-        return phi
+        return densities.sum(dim=1).unsqueeze(1)
 
     @staticmethod
     def matmul_3d(phi, c):
@@ -293,9 +292,7 @@ def sample_from_bivariate_mixture(mu1, mu2, sd1, sd2, ro):
     loc = torch.tensor([mu1.item(), mu2.item()])
     gmm = torch.distributions.MultivariateNormal(loc, sigma)
 
-    v = gmm.sample()
-
-    return v
+    return gmm.sample()
 
 
 def expand_dims(shape):

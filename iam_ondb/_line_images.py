@@ -13,10 +13,7 @@ def get_image_data(path):
 
 def reshape(im, width, height):
     pixel_list = im.getdata()
-    image_data = []
-    for _ in range(height):
-        image_data.append([0] * width)
-
+    image_data = [[0] * width for _ in range(height)]
     for i, pixel_value in enumerate(pixel_list):
         y = get_row(i, width)
         x = get_column(i, width)

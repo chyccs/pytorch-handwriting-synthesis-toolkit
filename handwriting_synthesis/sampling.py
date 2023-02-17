@@ -66,7 +66,7 @@ class UnconditionalSampler:
             print(f'Loaded model weights from {recent_checkpoint} file')
             return sampler, largest_epoch
         else:
-            print(f'Could not find a model')
+            print('Could not find a model')
             return None, 0
 
     @classmethod

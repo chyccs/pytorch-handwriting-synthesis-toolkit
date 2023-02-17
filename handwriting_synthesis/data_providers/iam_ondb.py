@@ -35,8 +35,6 @@ class IAMonDBProvider(DataSplittingProvider):
     def _remove_time_components(self, strokes):
         res = []
         for stroke in strokes:
-            new_stroke = []
-            for x, y, t in stroke:
-                new_stroke.append((x, y))
+            new_stroke = [(x, y) for x, y, t in stroke]
             res.append(new_stroke)
         return res

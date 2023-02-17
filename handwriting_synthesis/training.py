@@ -22,11 +22,7 @@ class TrainingLoop:
         self._output_device = ConsoleDevice()
         self._batch_size = batch_size
 
-        if training_task is None:
-            self._trainer = TrainingTask()
-        else:
-            self._trainer = training_task
-
+        self._trainer = TrainingTask() if training_task is None else training_task
         self._callbacks = []
         self._train_metrics = train_metrics or []
         self._val_metrics = val_metrics or []
@@ -115,15 +111,12 @@ class Formatter:
 
     @classmethod
     def format_epoch_info(cls, epoch, loss, val_loss, train_metrics, val_metrics):
-        all_metrics = ''
-        if train_metrics:
-            all_metrics = f' {cls._format_metrics(train_metrics)}'
-
+        all_metrics = f' {cls._format_metrics(train_metrics)}' if train_metrics else ''
         if val_metrics:
             all_metrics = f'{all_metrics} {cls._format_metrics(val_metrics, val_metrics=True)}'
 
         return f'Epoch {epoch:4} Loss {loss:7.2f} nats, Val. loss {val_loss:7.2f} nats.' \
-               f'{all_metrics}'
+                   f'{all_metrics}'
 
     @classmethod
     def _format_metrics(cls, metrics, val_metrics=False):

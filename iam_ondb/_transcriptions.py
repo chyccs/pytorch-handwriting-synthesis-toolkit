@@ -14,9 +14,7 @@ class GeneralInfo:
         self.Settings = settings
 
     def __str__(self):
-        return 'Form: {};\nCaptureTime: {};\nSettings: {}\n'.format(
-            self.Form, self.CaptureTime, self.Settings
-        )
+        return f'Form: {self.Form};\nCaptureTime: {self.CaptureTime};\nSettings: {self.Settings}\n'
 
 
 class Transcription(list):
@@ -42,7 +40,7 @@ def extract_transcription_from_txt_file(path):
 
         started = False
         lines = []
-        for line in f.readlines():
+        for line in f:
             if started and line.strip():
                 lines.append(line.rstrip())
             if 'CSR:' in line:
@@ -64,7 +62,7 @@ def extract_transcription(path):
     transcription = create_transcription_object(root)
 
     transcription_tags = list(root.iterfind('Transcription'))
-    if len(transcription_tags) == 0:
+    if not transcription_tags:
         raise MissingTranscriptionError()
 
     for tag in transcription_tags:
@@ -96,14 +94,12 @@ def get_id_candidates(word_tags):
         if 'id' in word_tag.attrib:
             word_id = word_tag.attrib['id']
             quadruplet = word_id.split('-')
-            file_id = '-'.join(quadruplet[:-1])
-            yield file_id
+            yield '-'.join(quadruplet[:-1])
 
 
 def create_transcription_object(root):
     res = Transcription()
-    general = list(root.iterfind('General'))
-    if len(general) > 0:
+    if general := list(root.iterfind('General')):
         general_tag = general[0]
 
         form = create_form_object(general_tag)
@@ -119,27 +115,18 @@ def create_transcription_object(root):
 def create_form_object(general_tag):
     form_tag = find_tag(general_tag, 'Form')
 
-    if form_tag is None:
-        return None
-
-    return parse_tag_attributes(form_tag)
+    return None if form_tag is None else parse_tag_attributes(form_tag)
 
 
 def create_capture_object(general_tag):
     capture_tag = find_tag(general_tag, 'CaptureTime')
 
-    if capture_tag is None:
-        return None
-
-    return parse_tag_attributes(capture_tag)
+    return None if capture_tag is None else parse_tag_attributes(capture_tag)
 
 
 def create_setting_object(general_tag):
     setting_tag = find_tag(general_tag, 'Setting')
-    if setting_tag is None:
-        return None
-
-    return parse_tag_attributes(setting_tag)
+    return None if setting_tag is None else parse_tag_attributes(setting_tag)
 
 
 def parse_tag_attributes(tag):
@@ -148,8 +135,7 @@ def parse_tag_attributes(tag):
 
 
 def find_tag(root, tag_name):
-    tags = list(root.iterfind(tag_name))
-    if len(tags) > 0:
+    if tags := list(root.iterfind(tag_name)):
         return list(root.iterfind(tag_name))[0]
 
 
@@ -166,14 +152,14 @@ def transcriptions_iterator(transcriptions_dir):
 
 def try_extracting_transcription(path):
     logger = get_logger()
-    logger.info('extracting transcription from {}'.format(path))
+    logger.info(f'extracting transcription from {path}')
 
     try:
         return extract_transcription(path)
     except InvalidXmlFileError as e:
-        logger.error('Invalid xml file: {}'.format(path))
+        logger.error(f'Invalid xml file: {path}')
     except MissingTranscriptionError:
-        logger.error('"Transcription" tag not found in file: {}'.format(path))
+        logger.error(f'"Transcription" tag not found in file: {path}')
     except:
         logger.exception(
             'Unknown exception raised when getting a transcription object'
@@ -183,5 +169,4 @@ def try_extracting_transcription(path):
 def lines_iterator(transcriptions_dir):
     it = transcriptions_iterator(transcriptions_dir)
     for transcription in it:
-        for file_id, line in transcription:
-            yield file_id, line
+        yield from transcription

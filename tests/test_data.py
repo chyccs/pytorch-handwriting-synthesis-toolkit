@@ -216,8 +216,7 @@ class H5Tests(unittest.TestCase):
     def test_mu_and_2_sequences(self):
         seq1 = [[0., 0., 0.], [2., 4., 0.], [-1., 1., 1.]]
         seq2 = [[0., 0., 0.], [-2., 1., 1.]]
-        flatten = []
-        flatten.extend(seq1)
+        flatten = list(seq1)
         flatten.extend(seq2)
 
         text1 = 'string 1'
@@ -399,7 +398,7 @@ class TokenizerTests(unittest.TestCase):
 
     def test_can_work_with_unicode_strings(self):
         text = 'こんにちは'
-        charset = str(text)
+        charset = text
         tokenizer = data.Tokenizer(charset)
         tokens = tokenizer.tokenize(text)
         self.assertEqual([1, 2, 3, 4, 5], tokens)
@@ -444,10 +443,10 @@ class TokenizerSerializationTests(unittest.TestCase):
         charset = 'string'
         data.Tokenizer(charset).save_charset(self.path)
 
-        text = str(charset)
+        text = charset
         expected_tokens = [1, 2, 3, 4, 5, 6]
 
-        for i in range(100):
+        for _ in range(100):
             tokenizer = data.Tokenizer.from_file(self.path)
             tokens = tokenizer.tokenize(text)
             self.assertEqual(expected_tokens, tokens)
