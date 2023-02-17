@@ -9,9 +9,7 @@ class MovingAverage:
 
     @property
     def value(self):
-        if self._iterations == 0:
-            return 0
-        return self._value / self._iterations
+        return 0 if self._iterations == 0 else self._value / self._iterations
 
     def update(self, v):
         self._value += v

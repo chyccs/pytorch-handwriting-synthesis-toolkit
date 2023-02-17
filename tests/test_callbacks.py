@@ -38,16 +38,16 @@ class CallbackTests(unittest.TestCase):
         model = torch.nn.Sequential(torch.nn.Linear(1, 1))
         checkpoint = handwriting_synthesis.callbacks.EpochModelCheckpoint(model, self._save_dir, save_interval=3)
         checkpoint.on_epoch(0)
-        save_path = os.path.join(self._save_dir, f'model_at_epoch_{0}.pt')
+        save_path = os.path.join(self._save_dir, 'model_at_epoch_0.pt')
         self.assertFalse(os.path.exists(save_path))
 
         epoch = 2
         checkpoint.on_epoch(epoch)
-        save_path = os.path.join(self._save_dir, f'model_at_epoch_{3}.pt')
+        save_path = os.path.join(self._save_dir, 'model_at_epoch_3.pt')
         self.assertTrue(os.path.isfile(save_path))
 
         checkpoint.on_epoch(5)
-        save_path = os.path.join(self._save_dir, f'model_at_epoch_{6}.pt')
+        save_path = os.path.join(self._save_dir, 'model_at_epoch_6.pt')
         self.assertTrue(os.path.isfile(save_path))
 
     def test_iteration_checkpoint_will_save_model_periodically_after_every_few_iterations(self):

@@ -46,7 +46,7 @@ if __name__ == '__main__':
     provider_class = registry[provider_name]
 
     if max_len == 0:
-        print(f'Calculating maximum length of training set sequences.')
+        print('Calculating maximum length of training set sequences.')
         max_len = calculate_max_length(provider_class, *args.provider_args)
         print(f'Maximum length is {max_len} points')
 

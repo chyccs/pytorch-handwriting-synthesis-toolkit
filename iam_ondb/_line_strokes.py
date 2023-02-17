@@ -14,18 +14,7 @@ class StrokeSet(list):
         self.HorizontallyOppositeCoords = None
 
     def __str__(self):
-        return '\n===================================\n' \
-               'StrokeSet\n' \
-               'SensorLocation: {};\n' \
-               'DiagonallyOppositeCoords: {};\n' \
-               'VerticallyOppositeCoords: {};\n' \
-               'HorizontallyOppositeCoords: {};\n' \
-               'First 5 strokes: {}\n' \
-               '===================================\n'.format(self.SensorLocation,
-                                                              self.DiagonallyOppositeCoords,
-                                                              self.VerticallyOppositeCoords,
-                                                              self.HorizontallyOppositeCoords,
-                                                              self[:5])
+        return f'\n===================================\nStrokeSet\nSensorLocation: {self.SensorLocation};\nDiagonallyOppositeCoords: {self.DiagonallyOppositeCoords};\nVerticallyOppositeCoords: {self.VerticallyOppositeCoords};\nHorizontallyOppositeCoords: {self.HorizontallyOppositeCoords};\nFirst 5 strokes: {self[:5]}\n===================================\n'
 
 
 def extract_strokes(path):
@@ -36,7 +25,7 @@ def extract_strokes(path):
         stroke_set = create_stroke_set(root)
 
         stroke_set_tags = list(root.iterfind('StrokeSet'))
-        if len(stroke_set_tags) == 0:
+        if not stroke_set_tags:
             raise MissingStrokeSetError()
 
         for tag in stroke_set_tags:
@@ -51,8 +40,7 @@ def extract_strokes(path):
 
 def create_stroke_set(root):
     stroke_set = StrokeSet()
-    white_board_description = list(root.iterfind('WhiteboardDescription'))
-    if len(white_board_description) > 0:
+    if white_board_description := list(root.iterfind('WhiteboardDescription')):
         description_tag = white_board_description[0]
         location_tag = list(description_tag.iterfind('SensorLocation'))[0]
         if 'corner' in location_tag.attrib:

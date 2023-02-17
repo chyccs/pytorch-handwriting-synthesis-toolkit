@@ -48,10 +48,7 @@ def try_getting_xml_root(path):
 
 
 def get_attributes(writer_tag):
-    all_attributes = {}
-    for k, v in writer_tag.attrib.items():
-        all_attributes[k] = [v]
-    return all_attributes
+    return {k: [v] for k, v in writer_tag.attrib.items()}
 
 
 class MissingWritersFileError(Exception):

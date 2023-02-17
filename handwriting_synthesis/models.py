@@ -116,8 +116,7 @@ class SoftWindow(jit.ScriptModule):
         u = torch.arange(char_seq_size, device=alpha.device)
 
         densities = alpha * torch.exp(-beta * (k - u) ** 2)
-        phi = densities.sum(dim=1).unsqueeze(1)
-        return phi
+        return densities.sum(dim=1).unsqueeze(1)
 
     @staticmethod
     def matmul_3d(phi, c):
@@ -259,7 +258,7 @@ class SynthesisNetwork(jit.ScriptModule):
 
         outputs = []
         attention_weights = []
-        for t in range(steps):
+        for _ in range(steps):
             x_with_w = torch.cat([x, w], dim=-1)
             h1, hidden1 = self.lstm1(x_with_w, hidden1)
 
@@ -301,18 +300,12 @@ class SynthesisNetwork(jit.ScriptModule):
     def clip_gradients(self, output_clip_value=100, lstm_clip_value=10):
 
         def output_params():
-            for param in self.mixture.parameters():
-                yield param
+            yield from self.mixture.parameters()
 
         def lstm_params():
-            for param in self.lstm1.parameters():
-                yield param
-
-            for param in self.lstm2.parameters():
-                yield param
-
-            for param in self.lstm3.parameters():
-                yield param
+            yield from self.lstm1.parameters()
+            yield from self.lstm2.parameters()
+            yield from self.lstm3.parameters()
 
         torch.nn.utils.clip_grad_value_(output_params(), output_clip_value)
         torch.nn.utils.clip_grad_value_(lstm_params(), lstm_clip_value)
@@ -404,12 +397,10 @@ class HandwritingPredictionNetwork(nn.Module):
 
     def clip_gradients(self, output_clip_value=100, lstm_clip_value=10):
         def output_params():
-            for param in self.output_layer.parameters():
-                yield param
+            yield from self.output_layer.parameters()
 
         def lstm_params():
-            for param in self.lstm.parameters():
-                yield param
+            yield from self.lstm.parameters()
 
         torch.nn.utils.clip_grad_value_(output_params(), output_clip_value)
         torch.nn.utils.clip_grad_value_(lstm_params(), lstm_clip_value)
@@ -438,11 +429,7 @@ def get_mean_prediction(output, device, stochastic):
         except Exception:
             logger.exception('Failed to sample from bi-variate normal distribution:')
 
-    if eos > 0.5:
-        eos_flag = 1
-    else:
-        eos_flag = 0
-
+    eos_flag = 1 if eos > 0.5 else 0
     return torch.tensor([x, y, eos_flag], device=device)
 
 

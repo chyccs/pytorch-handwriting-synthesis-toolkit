@@ -23,10 +23,10 @@ class KwargContainer:
 
         for k, v in self.__dict__.items():
             if type(v) is str:
-                v = '"{}"'.format(v)
-            keys_with_values.append('{}={}'.format(k, v))
+                v = f'"{v}"'
+            keys_with_values.append(f'{k}={v}')
         s = ', '.join(keys_with_values)
-        return 'KwargContainer({})'.format(s)
+        return f'KwargContainer({s})'
 
 
 class InvalidXmlFileError(Exception):
@@ -108,13 +108,11 @@ class PathFinder:
 
         parts = object_id.split('-')
         folder = parts[0]
-        subfolder = parts[0] + '-' + parts[1]
+        subfolder = f'{parts[0]}-{parts[1]}'
         return os.path.join(root, folder, subfolder)
 
     def _chomp_letter(self, s):
-        if self._last_is_digit(s):
-            return s
-        return s[:-1]
+        return s if self._last_is_digit(s) else s[:-1]
 
     def _last_is_digit(self, s):
         return s[-1].isdigit()

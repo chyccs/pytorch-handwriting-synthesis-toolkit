@@ -121,17 +121,17 @@ class IAMonDB:
         except UnidentifiedImageError as e:
             logger.error(repr(e))
         except InvalidXmlFileError:
-            logger.error('Failed to parse object with id {}'.format(object_id))
+            logger.error(f'Failed to parse object with id {object_id}')
         except ObjectDoesNotExistError as e:
             logger.error(repr(e))
         except:
-            logger.exception('Unknown exception raised when trying '
-                             'to get an example with id {}'.format(object_id))
+            logger.exception(
+                f'Unknown exception raised when trying to get an example with id {object_id}'
+            )
 
     def get_line_examples(self):
         """An alias of __iter__ method"""
-        for example in self:
-            yield example
+        yield from self
 
     def get_text_lines(self):
         """Iterate over all lines of all transcription texts."""
@@ -329,7 +329,7 @@ class IAMonDB:
 
     def _raise_object_not_found(self, object_id):
         raise ObjectDoesNotExistError(
-            'Object with such id was not found: {}'.format(object_id)
+            f'Object with such id was not found: {object_id}'
         )
 
 
